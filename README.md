@@ -79,6 +79,10 @@ Step 6 sends the SME to the sandbox EDP's own login. IB1 doesn't publish test cr
 
 The FSP-initiated flow starts from a link the FSP sends the SME. The landing page accepts `?fsp=<Directory member URL>`, for example `http://localhost:3000/?fsp=https://directory.core.sandbox.trust.ib1.org/m/hfp7r4t3`. The app accepts it only if the Directory gives that member the FSP role. Without the parameter, `FSP_MEMBER_URL` is used.
 
+## Deployment
+
+The demo runs on AWS at https://perseusready.sandbox.demo.ib1.org. The OpenTofu stack, container image and deploy scripts are described in [infra/README.md](infra/README.md).
+
 ## How it works
 
 - `lib/runner.ts`: one handler per automatic step. Each step checks that earlier steps are done, and re-running a step clears the later ones.
