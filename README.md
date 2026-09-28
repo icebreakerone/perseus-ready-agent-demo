@@ -37,7 +37,7 @@ The agent then asked four clarifying questions. The answers were:
 - **Report:** an HTML report with JSON downloads, rather than a signed PDF.
 - **Extra scope:** include the gas meter (summed with electricity) and the permission-record lookup, but not withdrawal or the message-delivery endpoint.
 
-### Plan summary
+### Plan summary
 A single-page Next.js app showing that we, a Carbon Accounting Provider (CAP), can complete the Perseus **"FSP-initiated with one permission"** flow in the IB1 sandbox. The flow runs from our Directory listing through to an emissions report for the SME's Financial Service Provider (FSP).
 
 Each step runs against the live sandbox services and gets a tick when it succeeds. Each step also records the requests it made (tokens redacted) so a reviewer can see what happened. Steps that need the SME pause for them to act.
