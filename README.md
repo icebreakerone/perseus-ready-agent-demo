@@ -1,5 +1,13 @@
 # Perseus Readiness Demo
 
+A single page Next.js app showing that we, a Carbon Accounting Provider (CAP), can complete the Perseus **"FSP-initiated with one permission"** flow in the IB1 sandbox. The flow runs from our Directory listing through to an emissions report for the SME's Financial Service Provider (FSP).
+
+This app was built to demonstrate how the Perseus scheme documentation, specification, directory tools and sample code allow a Perseus compliant CAP client to be built using a code agent with minimal intervention.
+
+The app is deployed at https://perseusready.sandbox.demo.ib1.org. The OpenTofu stack, container image and deploy scripts are described in [infra/README.md](infra/README.md).
+
+The total agent work time was around 40 minutes. After the initial clarifying questions, the agent produced a working, compliant demo in a single 35-minute session.
+
 ## Original prompt
 
 This demo was built with an AI coding agent (Claude Code). This is the prompt it started from:
@@ -29,23 +37,24 @@ The agent then asked four clarifying questions. The answers were:
 - **Report:** an HTML report with JSON downloads, rather than a signed PDF.
 - **Extra scope:** include the gas meter (summed with electricity) and the permission-record lookup, but not withdrawal or the message-delivery endpoint.
 
+### Plan summary
 A single-page Next.js app showing that we, a Carbon Accounting Provider (CAP), can complete the Perseus **"FSP-initiated with one permission"** flow in the IB1 sandbox. The flow runs from our Directory listing through to an emissions report for the SME's Financial Service Provider (FSP).
 
 Each step runs against the live sandbox services and gets a tick when it succeeds. Each step also records the requests it made (tokens redacted) so a reviewer can see what happened. Steps that need the SME pause for them to act.
 
-| # | Step | Who |
-|---|------|-----|
-| 1 | We are listed in the Directory (CAP role, active Trust Framework and Perseus memberships) | auto |
-| 2 | This application is registered, and its client and signing certificates are valid | auto |
-| 3 | We discover the EDP from the Directory catalogue and fetch its OAuth metadata | auto |
-| 4 | The SME signs in to their account with us | SME |
-| 5 | The SME grants permission using the Registry permission text, which we log | SME |
-| 6 | The SME authorises us at the EDP (PAR + PKCE over mTLS, then token exchange) | SME |
-| 7 | The EDP confirms the permission record | auto |
-| 8 | We retrieve 12 months of half-hourly data, verify the EDP's provenance and add a Receipt | auto |
-| 9 | We obtain NESO grid intensity and DESNZ gas factors, recorded as external Origins | auto |
-| 10 | We calculate whole-month emissions across all meters, recorded as Process steps | auto |
-| 11 | We create the report for the FSP, with a Transfer step, and sign and verify the record | auto |
+| #   | Step                                                                                      | Who  |
+| --- | ----------------------------------------------------------------------------------------- | ---- |
+| 1   | We are listed in the Directory (CAP role, active Trust Framework and Perseus memberships) | auto |
+| 2   | This application is registered, and its client and signing certificates are valid         | auto |
+| 3   | We discover the EDP from the Directory catalogue and fetch its OAuth metadata             | auto |
+| 4   | The SME signs in to their account with us                                                 | SME  |
+| 5   | The SME grants permission using the Registry permission text, which we log                | SME  |
+| 6   | The SME authorises us at the EDP (PAR + PKCE over mTLS, then token exchange)              | SME  |
+| 7   | The EDP confirms the permission record                                                    | auto |
+| 8   | We retrieve 12 months of half-hourly data, verify the EDP's provenance and add a Receipt  | auto |
+| 9   | We obtain NESO grid intensity and DESNZ gas factors, recorded as external Origins         | auto |
+| 10  | We calculate whole-month emissions across all meters, recorded as Process steps           | auto |
+| 11  | We create the report for the FSP, with a Transfer step, and sign and verify the record    | auto |
 
 Sources: the [CAP implementation guide](https://docs.core.trust.ib1.org/2026-03-12/scheme/perseus/carbon-accounting-providers/) and the specifications it links to. Where the sandbox differs from the specifications, the app follows the specification where it can. Where it can't, it isolates the difference in configuration and labels it in the UI as a "Sandbox note" (see [Known sandbox deviations](#known-sandbox-deviations)).
 
@@ -114,14 +123,14 @@ The tests create a throwaway test CA in a temporary directory using `scripts/gen
 
 ## Known sandbox deviations
 
-| Where | Specification / guide | Sandbox | What the app does |
-|---|---|---|---|
-| EDP `endpointURL` in the Directory | Base of the consumption data API | `https://perseus-demo-energy.ib1.org/consumption/datasources/` returns 404 | Uses `EDP_RESOURCE_BASE_OVERRIDE` (`https://mtls.perseus-demo-energy.ib1.org`) and flags it |
-| Catalogue `publisher` | Member URL on the Directory host | Sometimes on `sandbox.core.sandbox.trust.ib1.org` | Matches on the member identifier and flags it |
-| Permission record wrapper | `{"permission": …}` | `{"permissions": …}` | Accepts both and flags it |
-| Scope | Licence URL only | Server adds `offline_access` itself | Sends the licence URL only |
-| EDP scheme membership | Current agreement | Perseus agreement expired 2026-09-04 | Warns; a production CAP would not connect |
-| CAP → FSP transfer licence | Not explicit for the one-permission flow | – | Uses the one-permission licence (it covers the onward transfer) and notes it |
+| Where                              | Specification / guide                    | Sandbox                                                                    | What the app does                                                                           |
+| ---------------------------------- | ---------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| EDP `endpointURL` in the Directory | Base of the consumption data API         | `https://perseus-demo-energy.ib1.org/consumption/datasources/` returns 404 | Uses `EDP_RESOURCE_BASE_OVERRIDE` (`https://mtls.perseus-demo-energy.ib1.org`) and flags it |
+| Catalogue `publisher`              | Member URL on the Directory host         | Sometimes on `sandbox.core.sandbox.trust.ib1.org`                          | Matches on the member identifier and flags it                                               |
+| Permission record wrapper          | `{"permission": …}`                      | `{"permissions": …}`                                                       | Accepts both and flags it                                                                   |
+| Scope                              | Licence URL only                         | Server adds `offline_access` itself                                        | Sends the licence URL only                                                                  |
+| EDP scheme membership              | Current agreement                        | Perseus agreement expired 2026-09-04                                       | Warns; a production CAP would not connect                                                   |
+| CAP → FSP transfer licence         | Not explicit for the one-permission flow | –                                                                          | Uses the one-permission licence (it covers the onward transfer) and notes it                |
 
 Out of scope for this demo: withdrawal of permission, the message delivery endpoint, the signed PDF report, and the Directory allowlist check for server certificates.
 
