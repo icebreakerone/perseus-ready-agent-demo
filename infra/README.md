@@ -60,6 +60,8 @@ aws ecs update-service --cluster perseusready --service perseusready --force-new
 - Logs: CloudWatch `/ecs/perseusready/web`.
 - Shell into the task (ECS Exec is on by default):
   `aws ecs execute-command --cluster perseusready --task <id> --container web --interactive --command sh`
+- Metrics: Container Insights is off to save cost. The service's CPU and
+  memory use are in the free `AWS/ECS` CloudWatch metrics.
 - Configuration: the non-secret app settings are the `app_config` variable in
   `variables.tf`, and mirror `.env.example`.
 - Tear down: `tofu -chdir=infra destroy -var image_tag=unused`. EFS data is
@@ -68,5 +70,5 @@ aws ecs update-service --cluster perseusready --service perseusready --force-new
   with `aws secretsmanager delete-secret --secret-id perseusready/app
   --force-delete-without-recovery` first if you intend to redeploy.
 
-Estimated cost: around $40–50 a month, mostly the load balancer, the Fargate
-task and public IPv4 addresses.
+Estimated cost: around $41 a month. The load balancer and its two public IPv4
+addresses are about $27 of that, and the Fargate task about $10.
