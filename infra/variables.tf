@@ -33,7 +33,7 @@ variable "image_tag" {
 
 variable "task_cpu" {
   type    = number
-  default = 512
+  default = 256
 }
 
 variable "task_memory" {
