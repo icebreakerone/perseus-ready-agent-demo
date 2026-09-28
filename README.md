@@ -120,3 +120,7 @@ The tests create a throwaway test CA in a temporary directory using `scripts/gen
 | CAP → FSP transfer licence | Not explicit for the one-permission flow | – | Uses the one-permission licence (it covers the onward transfer) and notes it |
 
 Out of scope for this demo: withdrawal of permission, the message delivery endpoint, the signed PDF report, and the Directory allowlist check for server certificates.
+
+## License
+
+[MIT](LICENSE)
